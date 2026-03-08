@@ -19,8 +19,8 @@ Enlace del dataset: https://universe.roboflow.com/martins-workspace-7mzhv/maic_m
 
 ## Cómo reproducir (pasos en Colab)
 ### Este repositorio está diseñado para ejecutarse en Google Colab sin instalaciones locales.
-1.  Ambiente: Se recomienda el uso de GPU T4 en Colab.
-2. Acceso: Clonar este repositorio y abrir el notebook en la carpeta /notebooks.
+1. Acceso: Clonar o abrir el notebook en la "Notebook Colab". Se puede pulsar el botón para ir directamente a Colab o bien copiar y pegar el código. 
+2. Ambiente: Se recomienda el uso de GPU T4 en Colab.
 3. Configuración: Añade tu API Key de Roboflow donde dice "TU-API-KEY".
 
 Ejecuta las celdas secuencialmente para instalar dependencias y realizar la inferencia.
