@@ -177,6 +177,13 @@ Conclusiones Clave:
 * **GPU usada:** GPU T4
 * **Rango esperado de tiempo en ejecución:** Aproximadamente 4 minutos
 
+## Paquete PDF
+En este repositorio, se pueden visualizar los siguientes archivos pdf:
+* Diapositivas (PDF)
+* Mini-informe (PDF)
+
+Los mismos contienen el resumen ejecutivo, resultados, limitaciones, entre otra información del modelo.
+
 
 
 
