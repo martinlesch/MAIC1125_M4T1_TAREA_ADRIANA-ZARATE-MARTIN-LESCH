@@ -19,7 +19,7 @@ Enlace del dataset: https://universe.roboflow.com/martins-workspace-7mzhv/maic_m
 
 ## Cómo reproducir (pasos en Colab)
 ### Este repositorio está diseñado para ejecutarse en Google Colab sin instalaciones locales.
-1. Ambiente: Se recomienda el uso de GPU T4 en Colab.
+1.  Ambiente: Se recomienda el uso de GPU T4 en Colab.
 2. Acceso: Clonar este repositorio y abrir el notebook en la carpeta /notebooks.
 3. Configuración: Añade tu API Key de Roboflow donde dice "TU-API-KEY".
 
@@ -27,7 +27,81 @@ Ejecuta las celdas secuencialmente para instalar dependencias y realizar la infe
 
 **A continuación se van a desarrollar y explicar el código paso a paso:**
 
-Verificar que 
+Verificar GPU disponible
 ```bash
 !nvidia-smi
 ```
+
+Instalar dependencias
+```bash
+!pip install ultralytics roboflow
+```
+
+Importar librerías
+```bash
+from ultralytics import YOLO
+from roboflow import Roboflow
+import os
+from IPython.display import display, Image
+from IPython import display
+display.clear_output()
+```
+
+Descargar dataset desde Roboflow - en este paso debes añadir tu API KEY
+```bash
+rf = Roboflow(api_key="TU-API-KEY")  # Añade tu API KEY
+project = rf.workspace("martins-workspace-7mzhv").project("maic_m4t3_tarea")
+version = project.version(7)
+dataset = version.download("yolov8")
+```
+
+Entrenar el modelo
+```bash
+!yolo task=detect mode=train model=yolov8s.pt data={dataset.location}/data.yaml epochs=30 imgsz=640 batch=16
+```
+
+Validar el modelo entrenado
+```bash
+!yolo task=detect mode=val model=/content/runs/detect/train/weights/best.pt data={dataset.location}/data.yaml
+```
+
+Hacer predicciones sobre imágenes de validación
+```bash
+!yolo task=detect mode=predict model=/content/runs/detect/train/weights/best.pt source={dataset.location}/valid/images save=True
+```
+
+Mostrar imágenes con predicciones
+```bash
+import glob
+from IPython.display import Image, display
+
+for image_path in glob.glob('/content/runs/detect/predict/*.jpg'):
+    display(Image(filename=image_path, height=600))
+    print("\n")
+```
+
+Mostrar métricas del modelo
+```bash
+model = YOLO("/content/runs/detect/train/weights/best.pt")
+
+metrics = model.val()
+
+print("Precisión (P):        ", metrics.box.mp)
+print("Recall (R):           ", metrics.box.mr)
+print("mAP50:                ", metrics.box.map50)
+print("mAP50-95:             ", metrics.box.map)
+```
+
+Visualizar matriz de confusión y curvas de entrenamiento
+```bash
+Image(filename='/content/runs/detect/train/confusion_matrix.png', width=600)
+Image(filename='/content/runs/detect/train/results.png', width=600)
+```
+
+
+
+
+
+
+
+
