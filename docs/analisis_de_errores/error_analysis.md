@@ -64,3 +64,9 @@ Causa: El brazo extendido de la pluma comparte una firma visual (geometría line
 3. Inestabilidad en el Umbral Crítico: La confianza de 0.26 está apenas por encima de tu límite de detección (0.25). Este es un "falso positivo débil" que demuestra que el modelo está intentando encontrar patrones donde la información visual es ambigua.
    
 *"Este caso resalta el riesgo de contaminación de métricas de costo variable. Confundir un camión pluma con una excavadora inflaría artificialmente las horas de operación de movimiento de tierras. Se recomienda entrenar una clase adicional de 'Otros Equipos' para ayudar al modelo a aprender por contraste qué elementos NO pertenecen a las categorías críticas de Torregrúa y Excavadora."*
+
+## Mejoras prioritarias de datos
+Con la intanción de mejorar el porcentaje de precisión del modelo, se puede mejorar el dataset desde Roboflow y luego reentrenar el modelo hasta lograr los resultados esperados. En concreto 3 mejoras de datos pueden ser:
+1. Añadir mayor cantidad de imagenes sin perder la calidad del etiquetado. En este sentido, es preferible pocas imagenes bien etiquetadas que muchas sin etiquetar.
+2. Etiquetar imágenes con distintas paletas de colores y de ángulos diferenetes. Dado que el modelo puede ser utilizado por empresas que quieran controlar los activos en obras, es importante que el mismo pueda entrenarse con imagenes en blanco y negro, por ejemplo, y tomadas desde arriba como si fuesen hechas por un dron.
+3. Con la intención de evitar los falsos positivos, se puede entrenar al modelo con más contraejemplos enseñandole que una estructura reticulada no es una grua y que es distinto una excavadora de un camión grua por ejemplo. 
