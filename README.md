@@ -98,8 +98,84 @@ Image(filename='/content/runs/detect/train/confusion_matrix.png', width=600)
 Image(filename='/content/runs/detect/train/results.png', width=600)
 ```
 
+Subida de imagen desde archivos locales
+```bash
+from google.colab import files
+from IPython.display import display, Image as IPImage
+import os
 
+print('📁 Seleccioná la imagen desde tu computadora...')
+uploaded = files.upload()
 
+imagen_path = list(uploaded.keys())[0]
+print(f'✅ Imagen cargada: {imagen_path}')
+
+print('\n🖼️ Imagen original:')
+display(IPImage(imagen_path, width=600))
+```
+
+Correr el modelo con la imagen cargada y mostrar resultados en texo y en imagen
+```bash
+import glob
+
+MODEL_PATH = '/content/runs/detect/train/weights/best.pt'
+model = YOLO(MODEL_PATH)
+
+print(f'🔍 Detectando objetos en: {imagen_path}')
+results = model.predict(
+    source=imagen_path,
+    save=True,          # Guarda la imagen con los bounding boxes
+    conf=0.25,          # Umbral de confianza (ajustá según necesites)
+    iou=0.45,           # Umbral IoU para NMS
+    show_labels=True,
+    show_conf=True
+)
+
+print('\n📊 Resultados de detección:')
+for r in results:
+    boxes = r.boxes
+    if boxes is not None and len(boxes) > 0:
+        print(f'  → Objetos detectados: {len(boxes)}')
+        for box in boxes:
+            cls_id = int(box.cls[0])
+            conf   = float(box.conf[0])
+            label  = model.names[cls_id]
+            print(f'     • {label}: {conf:.1%} de confianza')
+    else:
+        print('  ⚠️ No se detectaron objetos con el umbral actual.')
+        print('     Probá bajando conf= a 0.10 o 0.15')
+
+predict_dirs = sorted(glob.glob('/content/runs/detect/predict*'), key=os.path.getmtime)
+if predict_dirs:
+    ultimo_dir = predict_dirs[-1]
+    imagenes_resultado = glob.glob(os.path.join(ultimo_dir, '*.jpg')) + \
+                         glob.glob(os.path.join(ultimo_dir, '*.png')) + \
+                         glob.glob(os.path.join(ultimo_dir, '*.jpeg'))
+    if imagenes_resultado:
+        print(f'\n🖼️ Imagen con detecciones (guardada en: {ultimo_dir}):')
+        display(IPImage(imagenes_resultado[0], width=600))
+    else:
+        print('No se encontró imagen de resultado en el directorio.')
+else:
+    print('No se encontró directorio de predicción.')
+```
+
+## Resumen de resultados (Análisis de métricas)
+
+Basado en las curvas de entrenamiento ejecutadas:
+* **Rendimiento General:** El modelo alcanzó un mAP50 cercano a 0.5 (50%) y un mAP50-95 de ~0.28. Aunque son valores iniciales para 30 épocas, la tendencia es claramente ascendente.
+* **Precisión y Recall:** Se observa un Precision (B) de aproximadamente 0.8 (80%) al final del entrenamiento, lo que indica que cuando el modelo detecta una máquina, suele estar en lo correcto. El Recall es más bajo (~0.45), sugiriendo que aún omite algunas máquinas en entornos muy congestionados.
+* 
+Conclusiones Clave:
+1. Convergencia Positiva: Las curvas de val/box_loss y val/cls_loss muestran un descenso sostenido, lo que indica que el modelo está aprendiendo y no hay un sobreajuste (overfitting) severo.
+2. Estabilidad de Clase: La clase Torregrúa muestra mayor estabilidad por su morfología única, mientras que la Excavadora presenta retos por oclusiones con materiales de obra.
+3. Potencial de Mejora: Dado que las métricas de precisión siguen subiendo en la época 30, un entrenamiento extendido a 100 épocas probablemente estabilizaría el Recall.
+
+## Prueba de Reproducibilidad
+
+* **Fecha y hora de la última ejecución exitosa:** 8:30 a.m. domingo, 8 de marzo de 2026 (GMT+1)
+* **GPU usada:** GPU T4
+* **Rango esperado de tiempo en ejecución:** Aproximadamente 4 minutos
 
 
 
